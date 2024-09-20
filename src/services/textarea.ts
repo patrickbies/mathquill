@@ -71,6 +71,7 @@ class Controller extends Controller_scrollHoriz {
     this.selectFn(latex);
   }
 
+  /** Requires `this.textarea` to be initialized. */
   staticMathTextareaEvents() {
     var ctrlr = this;
     this.removeTextareaEventListener('cut');
@@ -87,18 +88,16 @@ class Controller extends Controller_scrollHoriz {
 
     this.addStaticFocusBlurListeners();
 
-    ctrlr.selectFn = function (text: string) {
-      const textarea = ctrlr.getTextareaOrThrow();
-      if (!(textarea instanceof HTMLTextAreaElement)) return;
-      textarea.value = text;
-      if (text) textarea.select();
-    };
+    const textarea = this.getTextarea();
+    const { select } = saneKeyboardEvents(textarea, this);
+    this.selectFn = select;
   }
 
+  /** Requires `this.textarea` to be initialized. */
   editablesTextareaEvents() {
     var ctrlr = this;
-    const textarea = ctrlr.getTextareaOrThrow();
-    const textareaSpan = ctrlr.getTextareaSpanOrThrow();
+    const textarea = ctrlr.getTextarea();
+    const textareaSpan = ctrlr.getTextareaSpan();
 
     if (this.options.version < 3) {
       const $ = this.options.assertJquery();
@@ -118,10 +117,11 @@ class Controller extends Controller_scrollHoriz {
     this.addEditableFocusBlurListeners();
     this.updateMathspeak();
   }
+
   unbindEditablesEvents() {
     var ctrlr = this;
-    const textarea = ctrlr.getTextareaOrThrow();
-    const textareaSpan = ctrlr.getTextareaSpanOrThrow();
+    const textarea = ctrlr.getTextarea();
+    const textareaSpan = ctrlr.getTextareaSpan();
 
     this.selectFn = function (text: string) {
       if (!(textarea instanceof HTMLTextAreaElement)) return;
@@ -203,7 +203,7 @@ class Controller extends Controller_scrollHoriz {
     var mathspeak = ctrlr.root.mathspeak().trim();
     this.aria.clear();
 
-    const textarea = ctrlr.getTextareaOrThrow();
+    const textarea = ctrlr.getTextarea();
     // For static math, provide mathspeak in a visually hidden span to allow screen readers and other AT to traverse the content.
     // For editable math, assign the mathspeak to the textarea's ARIA label (AT can use text navigation to interrogate the content).
     // Be certain to include the mathspeak for only one of these, though, as we don't want to include outdated labels if a field's editable state changes.

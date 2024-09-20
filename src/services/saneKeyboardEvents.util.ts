@@ -360,6 +360,18 @@ var saneKeyboardEvents = (function () {
       everyTick.trigger(e);
     }
 
+    if (controller.KIND_OF_MQ === 'StaticMath') {
+      controller.addTextareaEventListeners({
+        keydown: (evt) => {
+          // The name `overrideKeystroke` matches the API for editable math,
+          // but it is overriding nothing. It replaces nothing with something.
+          controller.options.overrideKeystroke?.(getMQKeyName(evt!), evt);
+        }
+      });
+
+      return { select };
+    }
+
     if (controller.options && controller.options.disableCopyPaste) {
       controller.addTextareaEventListeners({
         keydown: onKeydown,
