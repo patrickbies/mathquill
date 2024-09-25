@@ -32,6 +32,10 @@ class Controller extends Controller_scrollHoriz {
     if (!textarea.nodeType) {
       throw 'substituteTextarea() must return a DOM element, got ' + textarea;
     }
+    if (!this.options.tabbable && this.KIND_OF_MQ === 'StaticMath') {
+      // aria-hide noninteractive textarea element for static math
+      textarea.setAttribute('aria-hidden', 'true');
+    }
     this.textarea = domFrag(textarea)
       .appendTo(this.textareaSpan)
       .oneElement() as HTMLTextAreaElement;
