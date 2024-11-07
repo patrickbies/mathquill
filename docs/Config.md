@@ -83,6 +83,8 @@ This defaults to the LaTeX built-in operator names ([Section 3.17 of the Short M
 
 Just like [`autoCommands`](#autocommands) above, this takes a string formatted as a space-delimited list of LaTeX commands.
 
+autoOperatorNames can also accept a speech-friendly alternative for each operator name. This will get read out by screenreaders in place of the raw command. To specify a speech-friendly-alternative, add a `|` character after the command, and then add the speech-friendly-alternative as a string, with spaces replaced by `-`. E.g. `stdev|standard-deviation`.
+
 ## infixOperatorNames
 
 `infixOperatorNames` specifies a set of operator names that should be treated as infix operators, for example for determining when to stop scanning left before a fraction.
