@@ -143,4 +143,38 @@ suite('focusBlur', function () {
     mq.blur();
     assertHasFocus(mq, 'math field', 'not');
   });
+
+  test('static math does not focus on click', function (done) {
+    var mq = MQ.StaticMath(
+      $('<span>1234\\times 10^{23}</span>').appendTo('#mock')[0]
+    );
+
+    const clickEvent = new Event('mousedown', {
+      bubbles: true,
+      cancelable: true
+    });
+
+    mq.el().dispatchEvent(clickEvent);
+    setTimeout(function () {
+      assertHasFocus(mq, 'math field', 'not');
+      done();
+    }, 100);
+  });
+
+  test('editable math does focus on click', function (done) {
+    var mq = MQ.MathField(
+      $('<span>1234\\times 10^{23}</span>').appendTo('#mock')[0]
+    );
+
+    const clickEvent = new Event('mousedown', {
+      bubbles: true,
+      cancelable: true
+    });
+
+    mq.el().dispatchEvent(clickEvent);
+    setTimeout(function () {
+      assertHasFocus(mq, 'math field');
+      done();
+    }, 100);
+  });
 });
