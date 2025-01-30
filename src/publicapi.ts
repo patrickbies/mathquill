@@ -89,7 +89,7 @@ class Options {
   constructor(public version: 1 | 2 | 3) {}
 
   ignoreNextMousedown: (_el: MouseEvent) => boolean;
-  substituteTextarea: (tabbable?: boolean) => HTMLElement;
+  substituteTextarea: () => HTMLElement;
   /** Only used in interface versions 1 and 2. */
   substituteKeyboardEvents: SubstituteKeyboardEvents;
 
@@ -304,11 +304,16 @@ function getInterface(v: number): MathQuill.v3.API | MathQuill.v1.API {
     }
 
     setAriaLabel(ariaLabel: string) {
+      if (ariaLabel === this.__controller.getAriaLabel()) return this;
       this.__controller.setAriaLabel(ariaLabel);
       return this;
     }
     getAriaLabel() {
       return this.__controller.getAriaLabel();
+    }
+    setTabbable(tabbable: boolean) {
+      this.__controller.setTabbable(tabbable);
+      return this;
     }
     config(opts: ConfigOptions) {
       config(this.__options, opts);

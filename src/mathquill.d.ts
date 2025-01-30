@@ -40,6 +40,7 @@ declare namespace MathQuill {
       latex(latex: string): this;
       latex(): string;
       setAriaLabel(str: string): this;
+      setTabbable(tabbable: boolean): this;
       blur(): this;
       focus(): this;
       select(): this;

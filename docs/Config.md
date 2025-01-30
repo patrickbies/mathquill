@@ -14,9 +14,8 @@ The configuration options object is of the following form:
   autoCommands: 'pi theta sqrt sum',
   autoOperatorNames: 'sin cos',
   maxDepth: 10,
-  substituteTextarea: function(tabbable) {
+  substituteTextarea: function() {
     const textarea = document.createElement('textarea');
-    textarea.setAttribute('tabindex', tabbable ? '0' : '-1');
     return textarea;
   },
   handlers: {
@@ -124,8 +123,6 @@ You can also specify a speech-friendly representation of the operator name by su
 
 `substituteTextarea` is a function that creates a focusable DOM element that is called when setting up a math field. Overwriting this may be useful for hacks like suppressing built-in virtual keyboards. It defaults to `<textarea autocorrect=off .../>`.
 For example, [Desmos](https://www.desmos.com/calculator) substitutes `<textarea inputmode=none />` to suppress the native virtual keyboard in favor of a custom math keypad that calls the MathQuill API. On old iOS versions that don't support `inputmode=none`, it uses `<span tabindex=0></span>` to suppress the native virtual keyboard, at the cost of bluetooth keyboards not working.
-
-The `substituteTextarea` takes one argument, a boolean `tabbable` that is true for editable math fields and for static math fields configured with `{tabbable: true}`. The textarea is permanently mounted to the page, so it should have `tabindex=-1` if `tabbable` is false.
 
 ## tabbable
 
