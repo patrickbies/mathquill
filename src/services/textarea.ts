@@ -8,7 +8,7 @@ Options.prototype.substituteTextarea = function () {
     autocomplete: 'off',
     autocorrect: 'off',
     spellcheck: false,
-    'x-palm-disable-ste-all': true,
+    'x-palm-disable-ste-all': true
   });
 };
 
@@ -80,13 +80,13 @@ class Controller extends Controller_scrollHoriz {
     this.wasTabbable = tabbable;
 
     this.textarea?.setAttribute('tabindex', tabbable ? '0' : '-1');
-    
+
     if (!tabbable && this.KIND_OF_MQ === 'StaticMath') {
       this.textarea?.setAttribute('aria-hidden', 'true');
     } else {
       this.textarea?.removeAttribute('aria-hidden');
     }
-    
+
     if (tabbable) {
       this.mathspeakSpan?.setAttribute('aria-hidden', 'true');
     } else {

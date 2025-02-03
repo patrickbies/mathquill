@@ -119,6 +119,49 @@ suite('focusBlur', function () {
     );
 
     assert.equal($(document.activeElement).attr('tabindex'), '0');
+    mq.setTabbable(false);
+    assert.equal(
+      $(document.activeElement).attr('tabindex'),
+      '-1',
+      'tab index updated when setTabbable:false called'
+    );
+
+    mq.setTabbable(true);
+    assert.equal(
+      $(document.activeElement).attr('tabindex'),
+      '0',
+      'tab index restored when setTabbable:true called'
+    );
+
+    mq.blur();
+    assertHasFocus(mq, 'math field', 'not');
+  });
+
+  test('tabindex for editable math', function () {
+    var mq = MQ.MathField($('<span></span>').appendTo('#mock')[0], {
+      tabbable: false
+    });
+
+    mq.focus();
+    mq.typedText('1+1');
+
+    assertHasFocus(mq, 'math field');
+    assert.equal(mq.latex(), '1+1', 'latex populated');
+
+    assert.equal($(document.activeElement).attr('tabindex'), '-1');
+    mq.setTabbable(true);
+    assert.equal(
+      $(document.activeElement).attr('tabindex'),
+      '0',
+      'tab index updated when setTabbable:true called'
+    );
+
+    mq.setTabbable(false);
+    assert.equal(
+      $(document.activeElement).attr('tabindex'),
+      '-1',
+      'tab index restored when setTabbable:false called'
+    );
 
     mq.blur();
     assertHasFocus(mq, 'math field', 'not');

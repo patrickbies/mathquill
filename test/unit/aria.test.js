@@ -28,14 +28,31 @@ suite('aria', function () {
     staticMath.latex('1+\\frac{1}{x}');
     var ariaHiddenChildren = $(container).find('[aria-hidden]="true"');
     assert.equal(ariaHiddenChildren.length, 2, '2 aria-hidden elements');
-    assert.ok(
-      ariaHiddenChildren[1].nodeName,
-      'textarea',
+    assert.equal(
+      ariaHiddenChildren[0].nodeName,
+      'TEXTAREA',
       'aria-hidden is set on static math textarea'
     );
     assert.ok(
       ariaHiddenChildren[1].classList.contains('mq-root-block'),
       'aria-hidden is set on mq-root-block'
+    );
+
+    staticMath.setTabbable(true);
+    var ariaHiddenChildren = $(container).find('[aria-hidden]="true"');
+    assert.equal(ariaHiddenChildren.length, 2, '2 aria-hidden elements');
+    assert.equal(
+      ariaHiddenChildren[0].nodeName,
+      'SPAN',
+      'aria-hidden is set on mathspeak span when tabbable'
+    );
+
+    staticMath.setTabbable(false);
+    var ariaHiddenChildren = $(container).find('[aria-hidden]="true"');
+    assert.equal(
+      ariaHiddenChildren[0].nodeName,
+      'TEXTAREA',
+      'aria-hidden is again set on textarea when no longer tabbable'
     );
   });
 
