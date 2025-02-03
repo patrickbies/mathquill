@@ -96,20 +96,17 @@ class ControllerBase {
     return this;
   }
   setAriaLabel(ariaLabel: string) {
-    var oldAriaLabel = this.getAriaLabel();
-    if (ariaLabel === oldAriaLabel) return this;
-    if (ariaLabel && typeof ariaLabel === 'string' && ariaLabel !== '') {
-      this.ariaLabel = ariaLabel;
-    } else if (this.editable) {
+    const oldAriaLabel = this.getAriaLabel();
+    if (!ariaLabel && this.editable) {
       this.ariaLabel = 'Math Input';
     } else {
-      this.ariaLabel = '';
+      this.ariaLabel = ariaLabel;
     }
     // If this field doesn't have focus, update its computed mathspeak value.
     // We check for focus because updating the aria-label attribute of a focused element will cause most screen readers to announce the new value (in our case, label along with the expression's mathspeak).
     // If the field does have focus at the time, it will be updated once a blur event occurs.
     // Unless we stop using fake text inputs and emulating screen reader behavior, this is going to remain a problem.
-    if (this.ariaLabel !== oldAriaLabel && !this.containerHasFocus()) {
+    if (ariaLabel !== oldAriaLabel && !this.containerHasFocus()) {
       this.updateMathspeak();
     }
     return this;

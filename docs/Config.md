@@ -129,7 +129,7 @@ For example, [Desmos](https://www.desmos.com/calculator) substitutes `<textarea 
 Sets a tabindex on the field, following the standard spec. When tabindex is -1,
 the math field is not part of the page's tab order. Despite that, the math field can still be focused when selected by a mouse.
 
-Static math fields default to `tabindex: -1`, Editable math fields default to `tabindex: 1`.
+Static math fields default to `tabindex: -1`, Editable math fields default to `tabindex: 0`.
 
 ## disableAutoSubstitutionInSubscripts
 
