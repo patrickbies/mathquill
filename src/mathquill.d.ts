@@ -40,7 +40,6 @@ declare namespace MathQuill {
       latex(latex: string): this;
       latex(): string;
       setAriaLabel(str: string): this;
-      setTabbable(tabbable: boolean): this;
       blur(): this;
       focus(): this;
       select(): this;
@@ -109,7 +108,7 @@ declare namespace MathQuill {
       typingSlashWritesDivisionSymbol?: boolean;
       typingPercentWritesPercentOf?: boolean;
       resetCursorOnBlur?: boolean | undefined;
-      tabbable?: boolean;
+      tabindex?: number;
       leftRightIntoCmdGoes?: 'up' | 'down';
       enableDigitGrouping?: boolean;
       tripleDotsAreEllipsis?: boolean;

@@ -124,11 +124,12 @@ You can also specify a speech-friendly representation of the operator name by su
 `substituteTextarea` is a function that creates a focusable DOM element that is called when setting up a math field. Overwriting this may be useful for hacks like suppressing built-in virtual keyboards. It defaults to `<textarea autocorrect=off .../>`.
 For example, [Desmos](https://www.desmos.com/calculator) substitutes `<textarea inputmode=none />` to suppress the native virtual keyboard in favor of a custom math keypad that calls the MathQuill API. On old iOS versions that don't support `inputmode=none`, it uses `<span tabindex=0></span>` to suppress the native virtual keyboard, at the cost of bluetooth keyboards not working.
 
-## tabbable
+## tabindex
 
-For static and editable math fields, when `tabbable` is false, the math field is not part of the page's tab order. Despite that, the math field can still be focused when selected by a mouse.
+Sets a tabindex on the field, following the standard spec. When tabindex is -1,
+the math field is not part of the page's tab order. Despite that, the math field can still be focused when selected by a mouse.
 
-Static math fields default to `tabbable: false`, Editable math fields default to `tabbable:true`.
+Static math fields default to `tabindex: -1`, Editable math fields default to `tabindex: 1`.
 
 ## disableAutoSubstitutionInSubscripts
 

@@ -252,10 +252,6 @@ mathField.typedText('x=-b\\pm \\sqrt b^2 -4ac');
 
 Specify an [ARIA label][`aria-label`] for this field, for screen readers. The actual [`aria-label`] includes this label followed by the math content of the field as speech. Default: `'Math Input'`
 
-## .setTabbable(tabbable)
-
-Specify whether this field should be in the tab order. 
-
 ## .getAriaLabel()
 
 Returns the [ARIA label][`aria-label`] for this field, for screen readers. If no ARIA label has been specified, `'Math Input'` is returned.

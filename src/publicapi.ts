@@ -107,7 +107,7 @@ class Options {
   leftRightIntoCmdGoes?: 'up' | 'down';
   enableDigitGrouping?: boolean;
   tripleDotsAreEllipsis?: boolean;
-  tabbable?: boolean;
+  tabindex?: number;
   mouseEvents?: boolean;
   maxDepth?: number;
   disableCopyPaste?: boolean;
@@ -310,12 +310,11 @@ function getInterface(v: number): MathQuill.v3.API | MathQuill.v1.API {
     getAriaLabel() {
       return this.__controller.getAriaLabel();
     }
-    setTabbable(tabbable: boolean) {
-      this.__controller.setTabbable(tabbable);
-      return this;
-    }
     config(opts: ConfigOptions) {
       config(this.__options, opts);
+      if (opts.tabindex !== undefined) {
+        this.__controller.setTabindex(opts.tabindex);
+      }
       return this;
     }
     el() {

@@ -29,7 +29,7 @@ Options.prototype.substituteKeyboardEvents = defaultSubstituteKeyboardEvents;
 class Controller extends Controller_scrollHoriz {
   selectFn: (text: string) => void = noop;
 
-  wasTabbable: boolean | undefined;
+  previousTabindex: number | undefined;
 
   createTextarea() {
     this.textareaSpan = h('span', { class: 'mq-textarea' });
@@ -60,34 +60,29 @@ class Controller extends Controller_scrollHoriz {
       ctrlr.selectionChanged();
     };
 
-    const tabbable =
-      this.options.tabbable !== undefined
-        ? this.options.tabbable
-        : this.KIND_OF_MQ !== 'StaticMath';
+    const tabindex =
+      this.options.tabindex !== undefined
+        ? this.options.tabindex
+        : this.KIND_OF_MQ === 'StaticMath'
+          ? -1
+          : 0;
 
-    if (!this.options.tabbable && this.KIND_OF_MQ === 'StaticMath') {
-      // aria-hide noninteractive textarea element for static math
-      textarea.setAttribute('aria-hidden', 'true');
-    }
-    if (tabbable && this.mathspeakSpan) {
-      this.mathspeakSpan.setAttribute('aria-hidden', 'true');
-    }
-    this.setTabbable(tabbable);
+    this.setTabindex(tabindex);
   }
 
-  setTabbable(tabbable: boolean) {
-    if (tabbable === this.wasTabbable) return;
-    this.wasTabbable = tabbable;
+  setTabindex(tabindex: number) {
+    if (tabindex === this.previousTabindex || !this.textarea) return;
+    this.previousTabindex = tabindex;
 
-    this.textarea?.setAttribute('tabindex', tabbable ? '0' : '-1');
+    this.textarea?.setAttribute('tabindex', '' + tabindex);
 
-    if (!tabbable && this.KIND_OF_MQ === 'StaticMath') {
+    if (tabindex < 0 && this.KIND_OF_MQ === 'StaticMath') {
       this.textarea?.setAttribute('aria-hidden', 'true');
     } else {
       this.textarea?.removeAttribute('aria-hidden');
     }
 
-    if (tabbable) {
+    if (tabindex >= 0) {
       this.mathspeakSpan?.setAttribute('aria-hidden', 'true');
     } else {
       this.mathspeakSpan?.removeAttribute('aria-hidden');
