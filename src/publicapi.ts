@@ -304,7 +304,6 @@ function getInterface(v: number): MathQuill.v3.API | MathQuill.v1.API {
     }
 
     setAriaLabel(ariaLabel: string) {
-      if (ariaLabel === this.__controller.getAriaLabel()) return this;
       this.__controller.setAriaLabel(ariaLabel);
       return this;
     }

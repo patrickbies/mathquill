@@ -118,7 +118,7 @@ suite('focusBlur', function () {
       'full textarea selected'
     );
 
-    assert.equal($(document.activeElement).attr('tabindex'), 0);
+    assert.equal($(document.activeElement).attr('tabindex'), '0');
 
     mq.blur();
     assertHasFocus(mq, 'math field', 'not');

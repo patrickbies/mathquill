@@ -65,6 +65,13 @@ class Controller extends Controller_scrollHoriz {
         ? this.options.tabbable
         : this.KIND_OF_MQ !== 'StaticMath';
 
+    if (!this.options.tabbable && this.KIND_OF_MQ === 'StaticMath') {
+      // aria-hide noninteractive textarea element for static math
+      textarea.setAttribute('aria-hidden', 'true');
+    }
+    if (tabbable && this.mathspeakSpan) {
+      this.mathspeakSpan.setAttribute('aria-hidden', 'true');
+    }
     this.setTabbable(tabbable);
   }
 
@@ -73,8 +80,18 @@ class Controller extends Controller_scrollHoriz {
     this.wasTabbable = tabbable;
 
     this.textarea?.setAttribute('tabindex', tabbable ? '0' : '-1');
-    this.textarea?.setAttribute('aria-hidden', !this.options.tabbable && this.KIND_OF_MQ === 'StaticMath' ? 'true' : 'false');
-    this.mathspeakSpan?.setAttribute('aria-hidden', tabbable ? 'true' : 'false');
+    
+    if (!tabbable && this.KIND_OF_MQ === 'StaticMath') {
+      this.textarea?.setAttribute('aria-hidden', 'true');
+    } else {
+      this.textarea?.removeAttribute('aria-hidden');
+    }
+    
+    if (tabbable) {
+      this.mathspeakSpan?.setAttribute('aria-hidden', 'true');
+    } else {
+      this.mathspeakSpan?.removeAttribute('aria-hidden');
+    }
   }
 
   selectionChanged() {

@@ -97,6 +97,7 @@ class ControllerBase {
   }
   setAriaLabel(ariaLabel: string) {
     var oldAriaLabel = this.getAriaLabel();
+    if (ariaLabel === oldAriaLabel) return this;
     if (ariaLabel && typeof ariaLabel === 'string' && ariaLabel !== '') {
       this.ariaLabel = ariaLabel;
     } else if (this.editable) {
