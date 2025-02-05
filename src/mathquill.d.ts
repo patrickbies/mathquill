@@ -108,7 +108,7 @@ declare namespace MathQuill {
       typingSlashWritesDivisionSymbol?: boolean;
       typingPercentWritesPercentOf?: boolean;
       resetCursorOnBlur?: boolean | undefined;
-      tabbable?: boolean;
+      tabindex?: number;
       leftRightIntoCmdGoes?: 'up' | 'down';
       enableDigitGrouping?: boolean;
       tripleDotsAreEllipsis?: boolean;

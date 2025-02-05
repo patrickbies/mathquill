@@ -106,7 +106,7 @@ suite('focusBlur', function () {
   test('full range selected on focusing tabbable static math', function () {
     var mq = MQ.StaticMath(
       $('<span>1234\\times 10^{23}</span>').appendTo('#mock')[0],
-      { tabbable: true }
+      { tabindex: 0 }
     );
 
     mq.focus();
@@ -118,7 +118,50 @@ suite('focusBlur', function () {
       'full textarea selected'
     );
 
-    assert.equal($(document.activeElement).attr('tabindex'), 0);
+    assert.equal($(document.activeElement).attr('tabindex'), '0');
+    mq.config({ tabindex: -1 });
+    assert.equal(
+      $(document.activeElement).attr('tabindex'),
+      '-1',
+      'tab index updated when tabindex is set to -1'
+    );
+
+    mq.config({ tabindex: 0 });
+    assert.equal(
+      $(document.activeElement).attr('tabindex'),
+      '0',
+      'tab index restored when tabindex is set to 0'
+    );
+
+    mq.blur();
+    assertHasFocus(mq, 'math field', 'not');
+  });
+
+  test('tabindex for editable math', function () {
+    var mq = MQ.MathField($('<span></span>').appendTo('#mock')[0], {
+      tabindex: -1
+    });
+
+    mq.focus();
+    mq.typedText('1+1');
+
+    assertHasFocus(mq, 'math field');
+    assert.equal(mq.latex(), '1+1', 'latex populated');
+
+    assert.equal($(document.activeElement).attr('tabindex'), '-1');
+    mq.config({ tabindex: 0 });
+    assert.equal(
+      $(document.activeElement).attr('tabindex'),
+      '0',
+      'tab index updated tabindex is set to 0'
+    );
+
+    mq.config({ tabindex: -1 });
+    assert.equal(
+      $(document.activeElement).attr('tabindex'),
+      '-1',
+      'tab index restored when tabindex is set to -1'
+    );
 
     mq.blur();
     assertHasFocus(mq, 'math field', 'not');

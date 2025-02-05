@@ -2,14 +2,13 @@
  * Manage the MathQuill instance's textarea
  * (as owned by the Controller)
  ********************************************/
-Options.prototype.substituteTextarea = function (tabbable?: boolean) {
+Options.prototype.substituteTextarea = function () {
   return h('textarea', {
     autocapitalize: 'off',
     autocomplete: 'off',
     autocorrect: 'off',
     spellcheck: false,
-    'x-palm-disable-ste-all': true,
-    tabindex: tabbable ? undefined : '-1'
+    'x-palm-disable-ste-all': true
   });
 };
 
@@ -30,22 +29,16 @@ Options.prototype.substituteKeyboardEvents = defaultSubstituteKeyboardEvents;
 class Controller extends Controller_scrollHoriz {
   selectFn: (text: string) => void = noop;
 
+  previousTabindex: number | undefined;
+
   createTextarea() {
     this.textareaSpan = h('span', { class: 'mq-textarea' });
 
-    const tabbable =
-      this.options.tabbable !== undefined
-        ? this.options.tabbable
-        : this.KIND_OF_MQ !== 'StaticMath';
-
-    const textarea = this.options.substituteTextarea(tabbable);
+    const textarea = this.options.substituteTextarea();
     if (!textarea.nodeType) {
       throw 'substituteTextarea() must return a DOM element, got ' + textarea;
     }
-    if (!this.options.tabbable && this.KIND_OF_MQ === 'StaticMath') {
-      // aria-hide noninteractive textarea element for static math
-      textarea.setAttribute('aria-hidden', 'true');
-    }
+
     this.textarea = domFrag(textarea)
       .appendTo(this.textareaSpan)
       .oneElement() as HTMLTextAreaElement;
@@ -61,14 +54,39 @@ class Controller extends Controller_scrollHoriz {
     if (this.mathspeakId) {
       textarea?.setAttribute('aria-labelledby', this.mathspeakId);
     }
-    if (tabbable && this.mathspeakSpan) {
-      this.mathspeakSpan.setAttribute('aria-hidden', 'true');
-    }
 
     var ctrlr = this;
     ctrlr.cursor.selectionChanged = function () {
       ctrlr.selectionChanged();
     };
+
+    const tabindex =
+      this.options.tabindex !== undefined
+        ? this.options.tabindex
+        : this.KIND_OF_MQ === 'StaticMath'
+          ? -1
+          : 0;
+
+    this.setTabindex(tabindex);
+  }
+
+  setTabindex(tabindex: number) {
+    if (tabindex === this.previousTabindex || !this.textarea) return;
+    this.previousTabindex = tabindex;
+
+    this.textarea?.setAttribute('tabindex', '' + tabindex);
+
+    if (tabindex < 0 && this.KIND_OF_MQ === 'StaticMath') {
+      this.textarea?.setAttribute('aria-hidden', 'true');
+    } else {
+      this.textarea?.removeAttribute('aria-hidden');
+    }
+
+    if (tabindex >= 0) {
+      this.mathspeakSpan?.setAttribute('aria-hidden', 'true');
+    } else {
+      this.mathspeakSpan?.removeAttribute('aria-hidden');
+    }
   }
 
   selectionChanged() {

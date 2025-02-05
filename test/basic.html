@@ -46,7 +46,7 @@
         });
       });
       var mq = MQ.MathField($('#basic')[0], {
-        tabbable: false,
+        tabindex: -1,
         autoSubscriptNumerals: true,
         autoCommands:
           'alpha beta sqrt theta phi pi tau nthroot cbrt prod int ans percent mid square',
@@ -58,6 +58,7 @@
         }
       });
       latex.val(mq.latex());
+      mq.config({ tabindex: 0 });
     </script>
   </body>
 </html>

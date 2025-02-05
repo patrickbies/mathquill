@@ -89,7 +89,7 @@ class Options {
   constructor(public version: 1 | 2 | 3) {}
 
   ignoreNextMousedown: (_el: MouseEvent) => boolean;
-  substituteTextarea: (tabbable?: boolean) => HTMLElement;
+  substituteTextarea: () => HTMLElement;
   /** Only used in interface versions 1 and 2. */
   substituteKeyboardEvents: SubstituteKeyboardEvents;
 
@@ -107,7 +107,7 @@ class Options {
   leftRightIntoCmdGoes?: 'up' | 'down';
   enableDigitGrouping?: boolean;
   tripleDotsAreEllipsis?: boolean;
-  tabbable?: boolean;
+  tabindex?: number;
   mouseEvents?: boolean;
   maxDepth?: number;
   disableCopyPaste?: boolean;
@@ -312,6 +312,9 @@ function getInterface(v: number): MathQuill.v3.API | MathQuill.v1.API {
     }
     config(opts: ConfigOptions) {
       config(this.__options, opts);
+      if (opts.tabindex !== undefined) {
+        this.__controller.setTabindex(opts.tabindex);
+      }
       return this;
     }
     el() {

@@ -28,19 +28,36 @@ suite('aria', function () {
     staticMath.latex('1+\\frac{1}{x}');
     var ariaHiddenChildren = $(container).find('[aria-hidden]="true"');
     assert.equal(ariaHiddenChildren.length, 2, '2 aria-hidden elements');
-    assert.ok(
-      ariaHiddenChildren[1].nodeName,
-      'textarea',
+    assert.equal(
+      ariaHiddenChildren[0].nodeName,
+      'TEXTAREA',
       'aria-hidden is set on static math textarea'
     );
     assert.ok(
       ariaHiddenChildren[1].classList.contains('mq-root-block'),
       'aria-hidden is set on mq-root-block'
     );
+
+    staticMath.config({ tabindex: 0 });
+    var ariaHiddenChildren = $(container).find('[aria-hidden]="true"');
+    assert.equal(ariaHiddenChildren.length, 2, '2 aria-hidden elements');
+    assert.equal(
+      ariaHiddenChildren[0].nodeName,
+      'SPAN',
+      'aria-hidden is set on mathspeak span when tabbable'
+    );
+
+    staticMath.config({ tabindex: -1 });
+    var ariaHiddenChildren = $(container).find('[aria-hidden]="true"');
+    assert.equal(
+      ariaHiddenChildren[0].nodeName,
+      'TEXTAREA',
+      'aria-hidden is again set on textarea when no longer tabbable'
+    );
   });
 
   test('Tabbable static math aria-hidden', function () {
-    var staticMath = MQ.StaticMath(container, { tabbable: true });
+    var staticMath = MQ.StaticMath(container, { tabindex: 0 });
     staticMath.latex('1+\\frac{1}{x}');
     var ariaHiddenChildren = $(container).find('[aria-hidden]="true"');
     // There will be two hidden children: the raw text of the field, and its mathspeak representation.
