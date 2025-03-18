@@ -63,6 +63,14 @@ suite('CSS', function () {
     assert.ok(testVal > 0, 'this should be truthy');
   });
 
+  test('comma has custom class', function () {
+    var mq = MQ.MathField($('<span></span>').appendTo('#mock')[0]);
+    mq.latex(',');
+    var spans = $(mq.el()).find('.mq-root-block').find('span');
+    assert.equal(spans.length, 1, 'we have one span');
+    assert.ok($(spans[0]).hasClass('mq-comma'), 'comma class applied');
+  });
+
   test('unary PlusMinus before separator', function () {
     var mq = MQ.MathField($('<span></span>').appendTo('#mock')[0]);
     mq.latex('(-1,-1-1)-1,(+1;+1+1)+1,(\\pm1,\\pm1\\pm1)\\pm1');

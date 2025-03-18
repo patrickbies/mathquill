@@ -781,7 +781,7 @@ suite('Digit Grouping', function () {
           { classes: 'mq-digit mq-group-start', content: '2' },
           { classes: 'mq-digit mq-group-other', content: '3' },
           { classes: 'mq-digit mq-group-other', content: '4' },
-          { content: ',' },
+          { classes: 'mq-comma', content: ',' },
           { content: '&nbsp;' },
           { classes: 'mq-digit mq-ellipsis-start', content: '.' },
           { classes: 'mq-digit mq-ellipsis-middle', content: '.' },

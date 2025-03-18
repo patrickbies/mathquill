@@ -884,6 +884,14 @@ LatexCmds['□'] = LatexCmds.square = bindVanillaSymbol(
 );
 LatexCmds.mid = bindVanillaSymbol('\\mid ', '\u2223', 'mid');
 
+// support for custom css
+class SymbolWithCustomClass extends MQSymbol {
+  constructor(ch: string, customClass: string) {
+    super(ch, h('span', { class: customClass }, [h.text(ch)]));
+  }
+}
+LatexCmds[','] = () => new SymbolWithCustomClass(',', 'mq-comma');
+
 // does not use Symbola font
 class NonSymbolaSymbol extends MQSymbol {
   constructor(ch: string, html?: ChildNode, _unusedMathspeak?: string) {
