@@ -1,0 +1,383 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=624" />
+
+    <title>MathQuill Test Page</title>
+
+    <link rel="stylesheet" type="text/css" href="support/home.css" />
+    <link rel="stylesheet" type="text/css" href="../build/mathquill.css" />
+
+    <script type="text/javascript" src="support/jquery-1.5.2.js"></script>
+
+    <style type="text/css">
+      body {
+        font-size: 0.8em;
+      }
+      #body {
+        padding: 1.25em;
+      }
+      h1 {
+        font-size: 2.5em;
+      }
+      td {
+        width: 33%;
+      }
+      #static-latex-rendering-table td {
+        width: 50%;
+      }
+      #show-textareas-button {
+        float: right;
+      }
+      .show-textareas .mq-editable-field.mq-text-mode {
+        overflow: visible;
+      }
+      .show-textareas .mq-textarea textarea {
+        font-size: inherit;
+        clip: auto !important;
+        resize: auto !important;
+        height: auto !important;
+        width: auto !important;
+        top: -45px;
+      }
+
+      /* Non-white background test */
+      .different-bgcolor.mq-editable-field {
+        background: black;
+        color: white;
+      }
+      .different-bgcolor.mq-editable-field .cursor {
+        border-color: white;
+      }
+
+      #overflow-test {
+        width: 100px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="body">
+      <a href="http://github.com/laughinghan/mathquill"
+        ><img
+          style="position: absolute; top: 0; right: 0; border: 0"
+          src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png"
+          alt="Fork me on GitHub!"
+      /></a>
+
+      <h3>Behavior Options</h3>
+
+      <p>
+        <span id="custom-behavior"
+          >x_a^b + \frac{\sqrt[n]{x}}{\frac{1}{2}}</span
+        >
+      </p>
+      <p>
+        Space should behave like Tab, left and right should go through the upper
+        block, sums should start with <code>n=</code>, exponents should require
+        an base, any of <code>+-=&lt;&gt;</code> should break out of an
+        exponent, <code>pi</code>, <code>theta</code>, <code>sqrt</code>, and
+        <code>sum</code> should all be auto-commands, but
+        <code>only</code> should be the only auto-operator name (so
+        <code>sin</code> etc. shouldn't automatically become non-italicized).
+      </p>
+
+      <script>
+        $(function () {
+          MQ.MathField($('#custom-behavior')[0], {
+            spaceBehavesLikeTab: true,
+            leftRightIntoCmdGoes: 'up',
+            restrictMismatchedBrackets: false,
+            sumStartsWithNEquals: true,
+            supSubsRequireOperand: true,
+            charsThatBreakOutOfSupSub: '+-=<>',
+            autoSubscriptNumerals: true,
+            autoCommands: 'pi theta sqrt sum int prod',
+            autoOperatorNames: 'only',
+          });
+        });
+      </script>
+    </div> 
+    <script type="text/javascript">
+      window.onerror = function (err) {
+        console.log(err); // to show up in Selenium WebDriver logs
+        $('html').css('background', 'red');
+      };
+    </script>
+    <script type="text/javascript" src="../build/mathquill.js"></script>
+    <script type="text/javascript">
+      MQ = MathQuill.getInterface(MathQuill.getInterface.MAX);
+
+      $('#show-textareas-button').click(function () {
+        $(document.body).toggleClass('show-textareas');
+      });
+
+      //on document ready, mathquill-ify all `<tag class="mathquill-*">latex</tag>`
+      //elements according to their CSS class.
+      $(function () {
+        $('.mathquill-static-math').each(function () {
+          MQ.StaticMath(this);
+        });
+        $('.static-math-no-mouse-events').each(function () {
+          MQ.StaticMath(this, { mouseEvents: false });
+        });
+        $('.mathquill-math-field').each(function () {
+          MQ.MathField(this);
+        });
+        $('.mathquill-text-field').each(function () {
+          MQ.TextField(this);
+        });
+      });
+
+      // test selecting from outside the mathquill editable
+      var $mq = $('.math-container .mathquill-math-field');
+      $('.math-container')
+        .mousedown(function (e) {
+          if (e.target === $mq[0] || $.contains($mq[0], e.target)) return;
+          var originalEvent = e.originalEvent;
+          var newEvent = new MouseEvent(originalEvent.type, originalEvent);
+          $mq[0].dispatchEvent(newEvent);
+        })
+        // test API for "fast touch taps" #622 & #403
+        .bind('touchstart', function () {
+          var moved = false;
+          $(this)
+            .bind('touchmove.tmp', function () {
+              moved = true;
+            })
+            .bind('touchend.tmp', function (e) {
+              $(this).off('.tmp');
+              MathQuill($mq[0]).ignoreNextMousedown(function () {
+                return Date.now() < e.timeStamp + 1000;
+              });
+              if (moved) return; // note that this happens after .ignoreNextMousedown()
+              // because even if the touch gesture doesn't 'count' as a tap to us,
+              // we still want to suppress the legacy mouse events, else we'd react
+              // fast to some taps and slow to others, that'd be weird
+              var touch = e.originalEvent.changedTouches[0];
+              MathQuill($mq[0]).clickAt(
+                touch.clientX,
+                touch.clientY,
+                touch.target
+              );
+            });
+        });
+
+      // Selection Tests
+      document.body.onload = function () {
+        setTimeout(function () {
+          $('#selection-tests .mathquill-text-field').each(function () {
+            var start = +new Date();
+            $('textarea', this)
+              .focus()[0]
+              .dispatchEvent(
+                new KeyboardEvent('keydown', { key: 'A', ctrlKey: true })
+              );
+            console.log(
+              'Time taken to Select All (should be &lt;50ms):',
+              new Date() - start
+            );
+          });
+        });
+      };
+
+      // Dynamic MathQuill-ification
+      // Initial LaTeX
+      $('#dynamic-initial tr').each(function () {
+        var math = $('span', this);
+        if (!math.length) return;
+
+        MQ.StaticMath(math[0]);
+        MQ.MathField(math[1]);
+        MQ.MathField(math[2]).revert();
+      });
+      // MQ(...).reflow()
+      $('#dynamic-reflow tr').each(function () {
+        var math = $('span', this),
+          td;
+        if (!math.length) return;
+
+        td = math.eq(0).parent();
+        math.eq(0).detach();
+        MQ.StaticMath(math[0]);
+        math.eq(0).appendTo(td);
+        MQ(math[0]).reflow();
+
+        td = math.eq(1).parent();
+        math.eq(1).detach();
+        MQ.MathField(math[1]);
+        math.eq(1).appendTo(td);
+        MQ(math[1]).reflow();
+
+        td = math.eq(2).parent();
+        math.eq(2).detach();
+        MQ.MathField(math[2]).revert();
+        math.eq(2).appendTo(td);
+        if (MQ(math[2])) throw 'should been have reverted';
+      });
+
+      // Dynamic rendering performance
+      function Avgs() {
+        return {
+          avgs: {},
+          add: function (k, v) {
+            if (!this.avgs[k]) this.avgs[k] = { n: 0, avg: 0 };
+            var avgObj = this.avgs[k];
+            avgObj.avg = (avgObj.n * avgObj.avg + v) / (avgObj.n + 1);
+            avgObj.n += 1;
+            return avgObj.avg + 'ms (across ' + avgObj.n + ' trials)';
+          }
+        };
+      }
+      var performance = window.performance || Date;
+      window.rawLogs = [];
+      function timeAndLog(f) {
+        var currentLog = [];
+        $.fn.mathquill.setLogFn(function (msg) {
+          currentLog.push({ msg: msg, now: performance.now() });
+        });
+        var start = performance.now();
+        f();
+        var duration = performance.now() - start;
+        $.fn.mathquill.setLogFn($.noop);
+
+        var timeline = [],
+          prev = 0;
+        for (var i = 0; i < currentLog.length; i += 1) {
+          var now = Math.round((currentLog[i].now - start) * 1000);
+          timeline.push(
+            now + ': [' + (now - prev) + 'µs] ' + currentLog[i].msg
+          );
+          prev = now;
+        }
+        timeline = timeline.join('\n');
+
+        rawLogs.push({
+          start: start,
+          duration: duration,
+          log: currentLog,
+          timeline: timeline
+        });
+        if (timeline.length) {
+          // for tablets without a console
+          if (location.hash === '#alert') alert(timeline);
+          else console.log(timeline);
+        }
+        return duration;
+      }
+      (function () {
+        var textarea = $('#latex-render-perf textarea');
+        var mathquill = $('#latex-render-perf .mathquill-math-field');
+        var avgs = Avgs();
+        $('#latex-render-perf button').click(function () {
+          var latex = textarea.val();
+          var duration = timeAndLog(function () {
+            mathquill.mathquill('latex', latex);
+          });
+          $('#html-render-perf').after(
+            '<p>' +
+              duration +
+              'ms rendering <code>' +
+              latex +
+              '</code>, for an average of ' +
+              avgs.add(latex, duration) +
+              '</p>'
+          );
+          $('#html-render-perf textarea').val(mathquill.mathquill('html'));
+        });
+      })();
+      (function () {
+        var textarea = $('#html-render-perf textarea');
+        var span = $('#html-render-perf span');
+        var avgs = Avgs();
+        $('#html-render-perf button').click(function () {
+          var html = textarea.val();
+          var duration = timeAndLog(function () {
+            span.html(html);
+          });
+          $(
+            '<p>' +
+              duration +
+              'ms rendering <code></code>, for an average of ' +
+              avgs.add(html, duration) +
+              '</p>'
+          )
+            .find('code')
+            .text(html)
+            .end()
+            .insertAfter('#html-render-perf');
+        });
+      })();
+
+      MQ.MathField($('#no-kbd-math')[0], {
+        substituteTextarea: function () {
+          return $(
+            '<span tabindex=0 style="display:inline-block;width:1px;height:1px" />'
+          )[0];
+        }
+      });
+
+      MQ.MathField($('#disable-typing')[0], {
+        overrideTypedText: $.noop
+      });
+
+      var OTTMQ = MQ.MathField($('#wrap-typing')[0], {
+        overrideTypedText: function (text) {
+          OTTMQ.typedText('<');
+          OTTMQ.typedText(text);
+          OTTMQ.typedText('>');
+        }
+      });
+
+      var OKSMQ = MQ.MathField($('#select-all-right-arrow')[0], {
+        overrideKeystroke: function (key) {
+          OKSMQ.keystroke(key);
+        }
+      });
+
+      var MQ2 = MathQuill.getInterface(2);
+
+      MQ2.MathField($('#disable-typing-ske')[0], {
+        substituteKeyboardEvents: function (textarea, handlers) {
+          return MQ2.saneKeyboardEvents(
+            textarea,
+            $.extend({}, handlers, {
+              cut: $.noop,
+              paste: $.noop,
+              keystroke: $.noop,
+              typedText: $.noop
+            })
+          );
+        }
+      });
+
+      var SKEMQ1 = MQ2.MathField($('#wrap-typing-ske')[0], {
+        substituteKeyboardEvents: function (textarea, handlers) {
+          return MQ2.saneKeyboardEvents(
+            textarea,
+            $.extend({}, handlers, {
+              typedText: function (text) {
+                SKEMQ1.typedText('<');
+                SKEMQ1.typedText(text);
+                SKEMQ1.typedText('>');
+              }
+            })
+          );
+        }
+      });
+
+      var SKEMQ2 = MQ2.MathField($('#select-all-right-arrow-ske')[0], {
+        substituteKeyboardEvents: function (textarea, handlers) {
+          return MQ2.saneKeyboardEvents(
+            textarea,
+            $.extend({}, handlers, {
+              keystroke: function (key) {
+                SKEMQ2.keystroke(key);
+              }
+            })
+          );
+        }
+      });
+    </script>
+  </body>
+</html>
